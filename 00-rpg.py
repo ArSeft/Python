@@ -1,12 +1,26 @@
 import random
 import os
 
-
-#   *MADE WITH PASSION BY SEFT* hope you enjoy my first text game, updates will come soon.
-
-
 class Player:
+    """
+    Represents the player character in the RPG game.
+
+    Attributes:
+        level (int): The player's current level.
+        hp (int): The player's current health points.
+        maxhp (int): The player's maximum health points.
+        atk (int): The player's attack power.
+        xp (int): The player's current experience points.
+        nextlvlxp (int): The experience points required to reach the next level.
+        gold (int): The player's current gold amount.
+        health_potions (dict): Inventory of health potions.
+        unlocked_mines (list): List of mines unlocked by the player.
+    """
+
     def __init__(self):
+        """
+        Initializes a new Player instance with default attributes.
+        """
         self.level = 1
         self.hp = 100
         self.maxhp = 100
@@ -15,24 +29,36 @@ class Player:
         self.nextlvlxp = 50
         self.gold = 0
         self.health_potions = {"Health Potion": 0}
-        self.unlocked_mines = ["Bronze Mine"]  
+        self.unlocked_mines = ["Bronze Mine"]
 
     def gain_xp(self, amount):
+        """
+        Adds experience points to the player and levels up if the required XP is reached.
+
+        Args:
+            amount (int): The amount of XP to add.
+        """
         self.xp += amount
         if self.xp >= self.nextlvlxp:
             self.lvl_up()
 
     def lvl_up(self):
+        """
+        Levels up the player, increasing stats and unlocking new mines if applicable.
+        """
         self.level += 1
         self.maxhp += 20
         self.hp = self.maxhp
         self.atk += 5
         self.xp = 0
-        self.nextlvlxp = int(self.nextlvlxp * 1.5)  
+        self.nextlvlxp = int(self.nextlvlxp * 1.5)
         print(f"\n*** You leveled up and recovered from your wounds! Now level {self.level}***")
         self.unlock_mines()
 
     def unlock_mines(self):
+        """
+        Unlocks new mines based on the player's level.
+        """
         mines = {
             3: "Silver Mine",
             5: "Gold Mine",
@@ -44,6 +70,9 @@ class Player:
                 print(f"\n*** You have unlocked {mine}! ***")
 
     def show_stats(self):
+        """
+        Displays the player's current stats, inventory, and unlocked mines.
+        """
         print(f"\nLevel: {self.level} \nHP: {self.hp}/{self.maxhp} \nAttack: {self.atk} \nXP: {self.xp}/{self.nextlvlxp} \nGold: {self.gold}")
         print("\nInventory:")
         for item, amount in self.health_potions.items():
@@ -56,6 +85,10 @@ class Player:
             print(f"- {mine} ({status})")
 
     def use_health_potion(self):
+        """
+        Uses a health potion to restore the player's health to maximum.
+        If no health potions are available, notifies the player.
+        """
         if self.health_potions["Health Potion"] > 0:
             self.hp = self.maxhp
             self.health_potions["Health Potion"] -= 1
@@ -67,12 +100,33 @@ class Player:
             print("\nYou don't have any Health Potions!")
             input("\nPress any key...")
             clear_console()
+
 class Enemy:
+    """
+    Represents an enemy in the RPG game.
+
+    Attributes:
+        hp (int): The enemy's health points.
+        atk (int): The enemy's attack power.
+    """
+
     def __init__(self, player_lvl):
+        """
+        Initializes a new Enemy instance with stats based on the player's level.
+
+        Args:
+            player_lvl (int): The player's current level, used to scale the enemy's stats.
+        """
         self.hp = random.randint(20, 40) + (player_lvl * 5)
         self.atk = random.randint(5, 10) + (player_lvl * 2)
 
 def enter_mine(player):
+    """
+    Allows the player to select and enter a mine.
+
+    Args:
+        player (Player): The player instance.
+    """
     while True:
         print("\nChoose a mine:")
         all_mines = ["Bronze Mine", "Silver Mine", "Gold Mine", "Diamond Mine"]
@@ -99,6 +153,13 @@ def enter_mine(player):
             print("\nInvalid input! Please enter a number.")
 
 def mine_loop(player, mine_type):
+    """
+    Handles the mining process in a selected mine.
+
+    Args:
+        player (Player): The player instance.
+        mine_type (str): The type of mine the player has entered.
+    """
     print(f"\nYou have entered {mine_type}.")
     
     xp_rewards = {
@@ -129,6 +190,12 @@ def mine_loop(player, mine_type):
             clear_console()
 
 def fight(player):
+    """
+    Initiates a fight between the player and an enemy.
+
+    Args:
+        player (Player): The player instance.
+    """
     enemy = Enemy(player.level)
     print(f"\nA wild monster has appeared! \nAttack: {enemy.atk} \nHP: {enemy.hp}")
 
@@ -162,9 +229,18 @@ def fight(player):
         player.hp = player.maxhp
 
 def clear_console():
+    """
+    Clears the console screen.
+    """
     os.system('cls' if os.name == 'nt' else 'clear')
 
 def shop(player):
+    """
+    Allows the player to purchase items from the shop.
+
+    Args:
+        player (Player): The player instance.
+    """
     print(f"\nWelcome to the shop! You have {player.gold} Gold!")
     print("\n1. Buy Health Potion (10 Gold)")
     print("2. Exit Shop")
@@ -186,6 +262,9 @@ def shop(player):
         print("\nInvalid choice!")
 
 def main():
+    """
+    The main game loop, allowing the player to choose actions such as mining, fighting, or shopping.
+    """
     player = Player()
     while True:
         print("\n1. Mine")
@@ -207,12 +286,12 @@ def main():
             clear_console()
             player.show_stats()
             while True:
-                exitstats=input("\nEnter to return: ")
+                exitstats = input("\nEnter to return: ")
                 if exitstats == "":
                     clear_console()
                     break
                 else:
-                    print("\nInavlid input, press enter!")                 
+                    print("\nInvalid input, press enter!")                 
         elif choice == "4":
             clear_console()
             shop(player)
@@ -228,5 +307,6 @@ def main():
             print("\nInvalid choice, try again.")
             input("\nPress any key...")
             clear_console()
+
 if __name__ == "__main__":
     main()
